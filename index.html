@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI TTS 음성 변환기</title>
+  <title>방구석 AI 퍼스널 트레이너</title>
   <style>
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
-      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      font-family: 'Malgun Gothic', Arial, sans-serif;
       color: #333;
     }
 
@@ -21,28 +21,52 @@
       background: #ffffff;
       border-radius: 24px;
       padding: 28px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     }
 
     h1 {
       margin: 0 0 8px;
       text-align: center;
       font-size: 28px;
+      color: #1a2a6c;
     }
 
     .subtitle {
       text-align: center;
-      color: #777;
+      color: #666;
       margin-bottom: 24px;
       font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* 로그인 바 스타일 */
+    .auth-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f1f3f5;
+      padding: 12px 20px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .auth-btn {
+      background: #1a2a6c;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
     }
 
     .info {
       padding: 14px;
       margin-bottom: 20px;
       border-radius: 14px;
-      background: #e8f5e9;
-      color: #2e7d32;
+      background: #e3f2fd;
+      color: #0d47a1;
       font-size: 14px;
       line-height: 1.6;
     }
@@ -57,7 +81,7 @@
     select, input {
       height: 44px;
       padding: 0 12px;
-      border: 1px solid #ddd;
+      border: 2px solid #ddd;
       border-radius: 12px;
       font-size: 14px;
       outline: none;
@@ -65,25 +89,25 @@
 
     textarea {
       width: 100%;
-      min-height: 180px;
+      min-height: 120px;
       resize: vertical;
       padding: 16px;
-      border: 1px solid #ddd;
+      border: 2px solid #ddd;
       border-radius: 16px;
       font-size: 16px;
       line-height: 1.5;
       outline: none;
-      font-family: Arial, sans-serif;
     }
 
     textarea:focus, select:focus, input:focus {
-      border-color: #42a5f5;
-      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
+      border-color: #ff5e62;
+      box-shadow: 0 0 0 3px rgba(255, 94, 98, 0.15);
     }
 
     .label {
       font-weight: bold;
       margin-bottom: 6px;
+      color: #444;
     }
 
     .button-row {
@@ -121,7 +145,7 @@
     }
 
     .make-btn {
-      background: #42a5f5;
+      background: #ff5e62;
       color: white;
     }
 
@@ -130,8 +154,8 @@
       color: white;
     }
 
-    .download-link {
-      background: #7e57c2;
+    .save-btn {
+      background: #2e7d32;
       color: white;
     }
 
@@ -142,26 +166,21 @@
       margin-top: 14px;
       color: #555;
       font-size: 14px;
+      font-weight: bold;
+      text-align: center;
     }
 
     .result-box {
       margin-top: 20px;
       padding: 18px;
       border-radius: 18px;
-      background: #f7f9fb;
-      border: 1px solid #edf1f5;
+      background: #f8f9fa;
+      border: 2px solid #ff5e62;
     }
 
     audio {
       width: 100%;
       margin-top: 10px;
-    }
-
-    .help {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #777;
-      line-height: 1.6;
     }
 
     @media (max-width: 700px) {
@@ -170,133 +189,202 @@
       button, .download-link { width: 100%; }
     }
   </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1>AI TTS 음성 변환기</h1>
-    <div class="subtitle">텍스트를 AI 음성 mp3 파일로 변환합니다</div>
+    <h1>🏋️‍♂️ 방구석 AI 퍼스널 트레이너</h1>
+    <div class="subtitle">체육 진로 연계 - 맞춤형 운동 루틴 생성 및 오디오 코칭 시스템</div>
+
+    <div class="auth-bar">
+      <span id="userStatus">로그인이 필요합니다. (체육관 입장 전)</span>
+      <button id="authBtn" class="auth-btn">로그인</button>
+    </div>
 
     <div class="info">
-      현재 구조: GitHub Pages 화면 → Google Apps Script 서버 → OpenAI TTS API → mp3 음성 반환<br />
-      API Key는 index.html에 들어가지 않고 Apps Script의 스크립트 속성에 저장됩니다.
+      <strong>[사용 방법]</strong> 로그인을 하신 후, 본인의 운동 목적과 타겟 부위를 설정하세요. <br>
+      AI 트레이너가 맞춤형 코칭 가이드를 짜고, <strong>오디오 TTS 음성</strong>으로 직접 행동 요령을 지시합니다!
     </div>
 
     <div class="option-box">
-      <select id="modelSelect">
-        <option value="tts-1">tts-1 빠른 생성</option>
-        <option value="tts-1-hd">tts-1-hd 고품질</option>
+      <select id="goalSelect">
+        <option value="다이어트 및 체지방 감량">🔥 다이어트 / 체지방 감량</option>
+        <option value="근육량 증가 및 벌크업">💪 근육량 증가 / 벌크업</option>
+        <option value="기초 체력 및 코어 강화">🏃 기초 체력 / 코어 강화</option>
+      </select>
+
+      <select id="partSelect">
+        <option value="하체 (스쿼트, 런지 중심)">🦵 하체 집중 공격</option>
+        <option value="상체 (푸쉬업, 가슴, 어깨 중심)">👕 상체/코어 빌딩</option>
+        <option value="전신 연소 (버피, 플랭크 중심)">🏃 전신 컨디셔닝</option>
       </select>
 
       <select id="voiceSelect">
-        <option value="alloy">alloy</option>
-        <option value="echo">echo</option>
-        <option value="fable">fable</option>
-        <option value="onyx">onyx</option>
-        <option value="nova">nova</option>
-        <option value="shimmer">shimmer</option>
+        <option value="onyx">onyx (든든한 남성 트레이너)</option>
+        <option value="nova">nova (친절한 여성 트레이너)</option>
+        <option value="alloy">alloy (기본 목소리)</option>
       </select>
-
-      <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도" />
     </div>
 
     <div>
-      <div class="label">변환할 텍스트</div>
-      <textarea id="textInput" placeholder="음성으로 바꿀 문장을 입력하세요. 예: 안녕하세요. 오늘은 Firebase와 OpenAI API를 활용한 웹페이지 제작을 배워보겠습니다."></textarea>
+      <div class="label">추가 요청사항 (선택)</div>
+      <textarea id="textInput" placeholder="예: 무릎이 조금 아프니까 무리 가지 않는 선에서 짜줘!"></textarea>
     </div>
 
     <div class="button-row">
       <button class="clear-btn" id="clearBtn">초기화</button>
-      <button class="make-btn" id="makeBtn">음성 만들기</button>
+      <button class="make-btn" id="makeBtn">AI 트레이닝 시작</button>
     </div>
 
     <div id="status" class="status"></div>
 
     <div id="resultBox" class="result-box hidden">
-      <div class="label">생성된 음성</div>
+      <div class="label" style="color: #1a2a6c;">📋 AI 트레이너의 오늘의 코칭</div>
+      <div id="aiResponseText" style="background: white; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 15px; white-space: pre-wrap; line-height: 1.6;"></div>
+      
+      <div class="label">🔊 오디오 가이드 코칭</div>
       <audio id="audioPlayer" controls></audio>
+      
       <div class="button-row">
-        <a id="downloadLink" class="download-link" href="#" download="tts-audio.mp3">mp3 다운로드</a>
+        <button id="saveDbBtn" class="save-btn">오늘의 운동 기록에 저장</button>
       </div>
-    </div>
-
-    <div class="help">
-      긴 문장은 생성 시간이 오래 걸릴 수 있습니다. 처음에는 짧은 문장으로 테스트해보세요.<br />
-      속도는 0.25부터 4.0까지 조절할 수 있습니다.
     </div>
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzvCeCidpIBm3Ez_AbmzTRrvzCkPa_7x-irAazDPzljPmuqjjHZOqXxfyS1vNh7tX1/exec';
+    // ----------------------------------------------------
+    // [중요] 본인의 Firebase 프로젝트 설정값으로 반드시 변경하세요!
+    // ----------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY_HERE",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database();
 
-    const textInput = document.getElementById('textInput');
-    const modelSelect = document.getElementById('modelSelect');
+    // 선생님이 제공해주신 Apps Script URL
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxDNMIktE288seW2Mr5YgksYFeAP3SNl8YyQZFa1DuvD0N_8pjRLDmxkZBYyQ4WGPmt/exec';
+
+    // UI 요소 가져오기
+    const authBtn = document.getElementById('authBtn');
+    const userStatus = document.getElementById('userStatus');
+    const goalSelect = document.getElementById('goalSelect');
+    const partSelect = document.getElementById('partSelect');
     const voiceSelect = document.getElementById('voiceSelect');
-    const speedInput = document.getElementById('speedInput');
+    const textInput = document.getElementById('textInput');
     const makeBtn = document.getElementById('makeBtn');
     const clearBtn = document.getElementById('clearBtn');
     const statusBox = document.getElementById('status');
     const resultBox = document.getElementById('resultBox');
+    const aiResponseText = document.getElementById('aiResponseText');
     const audioPlayer = document.getElementById('audioPlayer');
-    const downloadLink = document.getElementById('downloadLink');
+    const saveDbBtn = document.getElementById('saveDbBtn');
 
-    makeBtn.addEventListener('click', makeSpeech);
-    clearBtn.addEventListener('click', clearPage);
+    let currentUser = null;
+    let lastGeneratedRoutine = ""; // DB 저장용 글로벌 변수
 
-    textInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' && event.ctrlKey) {
-        makeSpeech();
+    // 1. Firebase Auth - 로그인 상태 모니터링
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        currentUser = user;
+        userStatus.textContent = `💪 ${user.email} 회원님 환영합니다!`;
+        authBtn.textContent = '로그아웃';
+      } else {
+        currentUser = null;
+        userStatus.textContent = '로그인이 필요합니다. (체육관 입장 전)';
+        authBtn.textContent = '로그인';
+        resultBox.classList.add('hidden');
       }
     });
 
+    // 로그인 / 로그아웃 버튼 클릭 이벤트
+    authBtn.addEventListener('click', () => {
+      if (currentUser) {
+        auth.signOut().then(() => alert('로그아웃 되었습니다.'));
+      } else {
+        // 수행평가 시연용 초간단 Prompt 로그인 (또는 테스트용 계정 자동 생성)
+        const email = prompt('이메일을 입력하세요:', 'test@sports.com');
+        const password = prompt('비밀번호를 입력하세요 (6자리 이상):', '123456');
+        
+        if(email && password) {
+          auth.signInWithEmailAndPassword(email, password).catch((err) => {
+            // 계정이 없으면 즉석에서 회원가입 시키기
+            if(err.code === 'auth/user-not-found') {
+              auth.createUserWithEmailAndPassword(email, password)
+                .then(() => alert('새로운 회원 등록 및 로그인 완료!'))
+                .catch(e => alert('에러: ' + e.message));
+            } else {
+              alert('로그인 실패: ' + err.message);
+            }
+          });
+        }
+      }
+    });
+
+    // 2. AI 요청 및 TTS 생성 함수
+    makeBtn.addEventListener('click', makeSpeech);
+    clearBtn.addEventListener('click', clearPage);
+
     async function makeSpeech() {
-      const text = textInput.value.trim();
-      const model = modelSelect.value;
+      // 필수 체크: 로그인 여부
+      if (!currentUser) {
+        alert('먼저 로그인을 해주셔야 AI 트레이너를 고용할 수 있습니다!');
+        return;
+      }
+
+      const goal = goalSelect.value;
+      const part = partSelect.value;
+      const customReq = textInput.value.trim();
       const voice = voiceSelect.value;
-      const speed = Number(speedInput.value || 1.0);
 
-      if (!text) {
-        alert('음성으로 변환할 텍스트를 입력해주세요.');
-        return;
-      }
-
-      if (speed < 0.25 || speed > 4.0) {
-        alert('속도는 0.25부터 4.0 사이로 입력해주세요.');
-        return;
-      }
+      // AI에게 전달하고 TTS로 읽을 스크립트 조합 (체육 목적에 맞게 텍스트 자동 구성)
+      let promptText = `오프닝 지시 사항입니다. 오늘의 운동 목적은 ${goal}이며, 목표 부위는 ${part}입니다. `;
+      if (customReq) promptText += `특별 요청 사항으로, '${customReq}' 라고 하셨습니다. 안전에 유의하여 스트레칭 후 3세트 진행하세요. 화이팅!`;
+      else promptText += `부상 방지를 위해 관절을 충분히 풀고, 지금 바로 본 운동을 3세트 시작하세요. 할 수 있습니다!`;
 
       try {
         setLoading(true);
         resultBox.classList.add('hidden');
-        statusBox.textContent = 'Apps Script 서버에 TTS 요청을 보내는 중입니다.';
+        statusBox.textContent = 'AI 트레이너가 루틴을 분석하고 오디오 가이드를 제작 중입니다...';
 
+        // 선생님 서버(Apps Script)로 규격에 맞춰 요청 발송
         const response = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           body: JSON.stringify({
             type: 'tts',
-            text: text,
-            model: model,
+            text: promptText,
+            model: 'tts-1',
             voice: voice,
-            speed: speed
+            speed: 1.0
           })
         });
 
         const data = await response.json();
 
-        if (data.error) {
-          throw new Error(data.error);
-        }
+        if (data.error) throw new Error(data.error);
+        if (!data.audioBase64) throw new Error('음성 데이터를 받지 못했습니다.');
 
-        if (!data.audioBase64) {
-          throw new Error('음성 데이터를 받지 못했습니다.');
-        }
+        // 화면 텍스트 출력
+        lastGeneratedRoutine = `[${part}] 목적: ${goal}\n가이드: ${promptText}`;
+        aiResponseText.textContent = lastGeneratedRoutine;
 
+        // 오디오 플레이어 연동
         const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
-
         audioPlayer.src = audioUrl;
-        downloadLink.href = audioUrl;
-        downloadLink.download = makeFileName();
+
         resultBox.classList.remove('hidden');
-        statusBox.textContent = '음성 생성 완료';
+        statusBox.textContent = '🏋️‍♂️ AI 코칭 준비 완료! 플레이 버튼을 누르세요.';
       } catch (error) {
         console.error(error);
         statusBox.textContent = '요청 실패';
@@ -306,49 +394,51 @@
       }
     }
 
+    // 3. Firebase Realtime Database에 기록 저장
+    saveDbBtn.addEventListener('click', () => {
+      if (!currentUser || !lastGeneratedRoutine) return;
+
+      const userId = currentUser.uid;
+      const newLogRef = database.ref('workout_logs/' + userId).push();
+      
+      newLogRef.set({
+        date: new Date().toLocaleString(),
+        routine: lastGeneratedRoutine
+      }).then(() => {
+        alert('🎯 파이어베이스 데이터베이스에 오늘 운동 기록 저장 완료!');
+      }).catch(err => {
+        alert('저장 실패: ' + err.message);
+      });
+    });
+
+    // 유틸리티 함수들 (선생님 코드 원본 유지)
     function base64ToAudioUrl(base64, mimeType) {
       const byteCharacters = atob(base64);
       const byteArrays = [];
-
       for (let offset = 0; offset < byteCharacters.length; offset += 512) {
         const slice = byteCharacters.slice(offset, offset + 512);
         const byteNumbers = new Array(slice.length);
-
         for (let i = 0; i < slice.length; i++) {
           byteNumbers[i] = slice.charCodeAt(i);
         }
-
         const byteArray = new Uint8Array(byteNumbers);
         byteArrays.push(byteArray);
       }
-
       const blob = new Blob(byteArrays, { type: mimeType });
       return URL.createObjectURL(blob);
     }
 
-    function makeFileName() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hour = String(now.getHours()).padStart(2, '0');
-      const minute = String(now.getMinutes()).padStart(2, '0');
-      return `tts-${year}${month}${day}-${hour}${minute}.mp3`;
-    }
-
     function setLoading(isLoading) {
       makeBtn.disabled = isLoading;
-      makeBtn.textContent = isLoading ? '생성 중...' : '음성 만들기';
+      makeBtn.textContent = isLoading ? '코칭 생성 중...' : 'AI 트레이닝 시작';
     }
 
     function clearPage() {
       textInput.value = '';
       statusBox.textContent = '';
       audioPlayer.removeAttribute('src');
-      downloadLink.href = '#';
       resultBox.classList.add('hidden');
     }
   </script>
 </body>
 </html>
-
