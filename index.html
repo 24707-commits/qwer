@@ -17,29 +17,79 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     }
     h1 { margin: 0 0 8px; text-align: center; font-size: 28px; color: #1a2a6c; }
+    h2 { margin-top: 0; font-size: 22px; }
     .subtitle { text-align: center; color: #666; margin-bottom: 24px; font-size: 14px; font-weight: bold; }
-    .auth-bar { display: flex; justify-content: space-between; align-items: center; background: #f1f3f5; padding: 12px 20px; border-radius: 14px; margin-bottom: 20px; font-size: 14px; }
-    .auth-btn { background: #1a2a6c; color: white; border: none; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+    /* ── 로그인 섹션 ── */
+    .auth-box {
+      max-width: 420px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .notice {
+      max-width: 420px; margin: 20px auto 0;
+      padding: 14px; border-radius: 14px;
+      background: #fff8e1; color: #6d4c41;
+      font-size: 14px; line-height: 1.6;
+    }
+
+    /* ── 메인 섹션 ── */
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px; margin-bottom: 22px; padding: 14px;
+      border-radius: 16px; background: #f1f3f5;
+    }
+    .user-info { font-size: 14px; color: #555; word-break: break-all; }
+
     .info { padding: 14px; margin-bottom: 20px; border-radius: 14px; background: #e3f2fd; color: #0d47a1; font-size: 14px; line-height: 1.6; }
     .option-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-    select, textarea { width: 100%; border: 2px solid #ddd; border-radius: 12px; outline: none; font-size: 15px; }
+    select, textarea {
+      width: 100%; border: 2px solid #ddd; border-radius: 12px;
+      outline: none; font-size: 15px;
+    }
     select { height: 44px; padding: 0 12px; }
     textarea { min-height: 100px; resize: vertical; padding: 16px; line-height: 1.5; }
     textarea:focus, select:focus { border-color: #ff5e62; box-shadow: 0 0 0 3px rgba(255, 94, 98, 0.15); }
     .label { font-weight: bold; margin-bottom: 6px; color: #444; }
     .button-row { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 14px; }
-    button { border: none; border-radius: 12px; padding: 0 18px; height: 46px; font-size: 15px; cursor: pointer; transition: 0.15s; font-weight: bold; }
+
+    /* ── 공통 버튼 ── */
+    input {
+      height: 46px; padding: 0 14px;
+      border: 1px solid #ddd; border-radius: 12px;
+      font-size: 15px; outline: none; width: 100%;
+    }
+    input:focus { border-color: #42a5f5; box-shadow: 0 0 0 3px rgba(66,165,245,0.15); }
+    button {
+      border: none; border-radius: 12px; padding: 0 18px;
+      height: 46px; font-size: 15px; cursor: pointer;
+      transition: 0.15s; font-weight: bold;
+    }
     button:hover { transform: translateY(-2px); opacity: 0.9; }
     button:disabled { cursor: not-allowed; opacity: 0.6; transform: none; }
-    .ask-btn { background: #ff5e62; color: white; }
-    .clear-btn { background: #b0bec5; color: white; }
-    .save-btn { background: #2e7d32; color: white; }
-    .tts-btn { background: #7e57c2; color: white; }
+    .login-btn  { background: #42a5f5; color: white; }
+    .signup-btn { background: #7e57c2; color: white; }
+    .logout-btn { background: #455a64; color: white; }
+    .ask-btn    { background: #ff5e62; color: white; }
+    .clear-btn  { background: #b0bec5; color: white; }
+    .save-btn   { background: #2e7d32; color: white; }
+    .tts-btn    { background: #7e57c2; color: white; }
+
     .hidden { display: none; }
     .status { min-height: 24px; margin-top: 14px; color: #555; font-size: 14px; font-weight: bold; text-align: center; }
     .result-box { margin-top: 20px; padding: 18px; border-radius: 18px; background: #f8f9fa; border: 2px solid #ff5e62; }
-    .answer-box { min-height: 120px; padding: 14px; background: #ffffff; border-radius: 12px; border: 1px solid #edf1f5; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin-bottom: 14px; }
-    @media (max-width: 700px) { .option-box { grid-template-columns: 1fr; } .button-row { justify-content: stretch; } button { width: 100%; } }
+    .answer-box {
+      min-height: 120px; padding: 14px; background: #ffffff;
+      border-radius: 12px; border: 1px solid #edf1f5;
+      font-size: 15px; line-height: 1.6; white-space: pre-wrap;
+      word-break: break-word; margin-bottom: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .option-box { grid-template-columns: 1fr; }
+      .button-row { justify-content: stretch; }
+      button { width: 100%; }
+      .top-bar { flex-direction: column; align-items: stretch; }
+    }
   </style>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -51,203 +101,268 @@
     <h1>🏋️‍♂️ 방구석 AI 퍼스널 트레이너</h1>
     <div class="subtitle">체육 진로 연계 - 맞춤형 운동 루틴 설계 및 가이드 시스템</div>
 
-    <div class="auth-bar">
-      <span id="userStatus">로그인이 필요합니다. (체육관 입장 전)</span>
-      <button id="authBtn" class="auth-btn">로그인</button>
-    </div>
-
-    <div class="info">
-      <strong>[사용 방법]</strong> 로그인을 진행한 후, 운동 목적과 부위를 골라 질문해 보세요. <br>
-      ChatGPT 인공지능이 맞춤 루틴을 짜주고, 브라우저가 직접 <strong>음성(TTS)</strong>으로 변환해 읽어줍니다!
-    </div>
-
-    <div class="option-box">
-      <div>
-        <div class="label">운동 목적</div>
-        <select id="goalSelect">
-          <option value="다이어트와 체지방 감량">🔥 다이어트 / 체지방 감량</option>
-          <option value="근육량 증가와 벌크업">💪 근육량 증가 / 벌크업</option>
-          <option value="기초 체력 및 코어 강화">🏃 기초 체력 / 코어 강화</option>
-        </select>
+    <!-- ── 로그인 섹션 ── -->
+    <section id="authSection">
+      <div class="auth-box">
+        <h2>로그인 / 회원가입</h2>
+        <input id="emailInput" type="email" placeholder="이메일" />
+        <input id="passwordInput" type="password" placeholder="비밀번호 6자리 이상" />
+        <button class="login-btn" id="loginBtn">로그인</button>
+        <button class="signup-btn" id="signupBtn">회원가입</button>
       </div>
-      <div>
-        <div class="label">타겟 부위</div>
-        <select id="partSelect">
-          <option value="하체 중심 운동(스쿼트, 런지)">🦵 하체 집중 공격</option>
-          <option value="상체 및 코어 중심 운동(푸쉬업, 플랭크)">👕 상체/코어 빌딩</option>
-        </select>
+      <div class="notice">
+        처음 사용하는 이메일은 <strong>회원가입</strong>을 먼저 누르세요.<br />
+        이미 가입한 이메일은 <strong>로그인</strong> 버튼을 누르면 됩니다.
       </div>
-    </div>
+    </section>
 
-    <div>
-      <div class="label">추가 요청 및 질문</div>
-      <textarea id="questionInput" placeholder="예: 무릎이 아프니까 무리 가지 않는 선에서 고등학생 수준으로 쉽게 짜줘!"></textarea>
-    </div>
+    <!-- ── 메인 섹션 ── -->
+    <section id="mainSection" class="hidden">
+      <div class="top-bar">
+        <div class="user-info">
+          로그인 계정: <strong id="userEmail"></strong>
+        </div>
+        <button class="logout-btn" id="logoutBtn">로그아웃</button>
+      </div>
 
-    <div class="button-row">
-      <button class="clear-btn" id="clearBtn">초기화</button>
-      <button class="ask-btn" id="askBtn">AI 트레이닝 루틴 생성</button>
-    </div>
+      <div class="info">
+        <strong>[사용 방법]</strong> 운동 목적과 부위를 골라 질문해 보세요.<br>
+        AI가 맞춤 루틴을 짜주고, 브라우저가 직접 <strong>음성(TTS)</strong>으로 변환해 읽어줍니다!
+      </div>
 
-    <div id="status" class="status"></div>
+      <div class="option-box">
+        <div>
+          <div class="label">운동 목적</div>
+          <select id="goalSelect">
+            <option value="다이어트와 체지방 감량">🔥 다이어트 / 체지방 감량</option>
+            <option value="근육량 증가와 벌크업">💪 근육량 증가 / 벌크업</option>
+            <option value="기초 체력 및 코어 강화">🏃 기초 체력 / 코어 강화</option>
+          </select>
+        </div>
+        <div>
+          <div class="label">타겟 부위</div>
+          <select id="partSelect">
+            <option value="하체 중심 운동(스쿼트, 런지)">🦵 하체 집중 공격</option>
+            <option value="상체 및 코어 중심 운동(푸쉬업, 플랭크)">👕 상체/코어 빌딩</option>
+          </select>
+        </div>
+      </div>
 
-    <div id="resultBox" class="result-box hidden">
-      <div class="label" style="color: #1a2a6c;">📋 AI 트레이너의 오늘의 코칭 답변</div>
-      <div id="answerBox" class="answer-box"></div>
-      
+      <div>
+        <div class="label">추가 요청 및 질문</div>
+        <textarea id="questionInput" placeholder="예: 무릎이 아프니까 무리 가지 않는 선에서 고등학생 수준으로 쉽게 짜줘!"></textarea>
+      </div>
+
       <div class="button-row">
-        <button id="ttsBtn" class="tts-btn">🔊 오디오 음성으로 듣기</button>
-        <button id="saveDbBtn" class="save-btn">💾 오늘 기록 파이어베이스에 저장</button>
+        <button class="clear-btn" id="clearBtn">초기화</button>
+        <button class="ask-btn" id="askBtn">AI 트레이닝 루틴 생성</button>
       </div>
-    </div>
+
+      <div id="status" class="status"></div>
+
+      <div id="resultBox" class="result-box hidden">
+        <div class="label" style="color: #1a2a6c;">📋 AI 트레이너의 오늘의 코칭 답변</div>
+        <div id="answerBox" class="answer-box"></div>
+        <div class="button-row">
+          <button id="ttsBtn" class="tts-btn">🔊 오디오 음성으로 듣기</button>
+          <button id="saveDbBtn" class="save-btn">💾 오늘 기록 파이어베이스에 저장</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script>
-    // ----------------------------------------------------
-    // [중요] 아래 항목들을 본인의 파이어베이스 콘솔 설정값으로 교체하세요!
-    // ----------------------------------------------------
-   const firebaseConfig = {
-  apiKey: "AIzaSyAe2G4Ov-K_J32DHsE4BsLOvQVVgyIi9Qk",
-  authDomain: "qwer-23afa.firebaseapp.com",
-  databaseURL: "https://qwer-23afa-default-rtdb.firebaseio.com",
-  projectId: "qwer-23afa",
-  storageBucket: "qwer-23afa.firebasestorage.app",
-  messagingSenderId: "293627168429",
-  appId: "1:293627168429:web:f3cf8a67aced5f3e53e824",
-  measurementId: "G-PMV8RZCXS1"
-};
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDO-v52Ehwphh5gW0WBzu9_DliMhOzy4Yo',
+      authDomain: 'kang-f4e85.firebaseapp.com',
+      databaseURL: 'https://kang-f4e85-default-rtdb.firebaseio.com',
+      projectId: 'kang-f4e85',
+      storageBucket: 'kang-f4e85.firebasestorage.app',
+      messagingSenderId: '107057126084',
+      appId: '1:107057126084:web:30f7bcb3f25dd2aa4a0791'
+    };
 
-    
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const auth     = firebase.auth();
     const database = firebase.database();
 
-    // [중요] 구글 앱스 스크립트를 새로 배포하여 획득한 주소를 여기에 넣으세요!
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqFsC0yjytPozFPAd0GYptaNOhmPg0zmiq9DNlksPP90_3fYpftBNgCBvK4X71NI8s/exec';
+    // Apps Script URL (ChatGPT 프록시)
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLjOZ1EVWuakBGF_9gGWO-1IrWgbb6EUqDHoeX3FM/dev';
 
-    const authBtn = document.getElementById('authBtn');
-    const userStatus = document.getElementById('userStatus');
-    const goalSelect = document.getElementById('goalSelect');
-    const partSelect = document.getElementById('partSelect');
+    // ── DOM ──
+    const authSection   = document.getElementById('authSection');
+    const mainSection   = document.getElementById('mainSection');
+    const emailInput    = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn      = document.getElementById('loginBtn');
+    const signupBtn     = document.getElementById('signupBtn');
+    const logoutBtn     = document.getElementById('logoutBtn');
+    const userEmail     = document.getElementById('userEmail');
+    const goalSelect    = document.getElementById('goalSelect');
+    const partSelect    = document.getElementById('partSelect');
     const questionInput = document.getElementById('questionInput');
-    const askBtn = document.getElementById('askBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const statusBox = document.getElementById('status');
-    const resultBox = document.getElementById('resultBox');
-    const answerBox = document.getElementById('answerBox');
-    const ttsBtn = document.getElementById('ttsBtn');
-    const saveDbBtn = document.getElementById('saveDbBtn');
+    const askBtn        = document.getElementById('askBtn');
+    const clearBtn      = document.getElementById('clearBtn');
+    const statusBox     = document.getElementById('status');
+    const resultBox     = document.getElementById('resultBox');
+    const answerBox     = document.getElementById('answerBox');
+    const ttsBtn        = document.getElementById('ttsBtn');
+    const saveDbBtn     = document.getElementById('saveDbBtn');
 
-    let currentUser = null;
-    let currentAnswerText = ""; 
+    let currentUser      = null;
+    let currentAnswerText = '';
 
+    // ── 인증 상태 감지 ──
     auth.onAuthStateChanged((user) => {
       if (user) {
         currentUser = user;
-        userStatus.textContent = `💪 ${user.email} 회원님 로그인됨`;
-        authBtn.textContent = '로그아웃';
+        authSection.classList.add('hidden');
+        mainSection.classList.remove('hidden');
+        userEmail.textContent = user.email;
+        emailInput.value    = '';
+        passwordInput.value = '';
       } else {
         currentUser = null;
-        userStatus.textContent = '로그인이 필요합니다. (체육관 입장 전)';
-        authBtn.textContent = '로그인';
+        authSection.classList.remove('hidden');
+        mainSection.classList.add('hidden');
+        userEmail.textContent = '';
         resultBox.classList.add('hidden');
       }
     });
 
-    authBtn.addEventListener('click', () => {
-      if (currentUser) {
-        auth.signOut().then(() => alert('로그아웃 완료'));
-      } else {
-        const email = prompt('이메일 입력:', 'sports@test.com');
-        const password = prompt('비밀번호 입력(6자리이상):', '123456');
-        if (email && password) {
-          auth.signInWithEmailAndPassword(email, password).catch(err => {
-            if (err.code === 'auth/user-not-found') {
-              auth.createUserWithEmailAndPassword(email, password).then(() => alert('자동 회원가입 및 로그인 완료!'));
-            } else {
-              alert('오류: ' + err.message);
-            }
-          });
-        }
+    // ── 입력값 검증 ──
+    function getCredentials() {
+      const email    = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!email || !password) { alert('이메일과 비밀번호를 모두 입력해주세요.'); return null; }
+      if (password.length < 6) { alert('비밀번호는 6자리 이상이어야 합니다.'); return null; }
+      return { email, password };
+    }
+
+    // ── 로그인 ──
+    loginBtn.addEventListener('click', async () => {
+      const cred = getCredentials();
+      if (!cred) return;
+      try {
+        await auth.signInWithEmailAndPassword(cred.email, cred.password);
+      } catch (err) {
+        alert(getKoreanError(err.code));
       }
     });
 
-    async function askChatGPT() {
-      if (!currentUser) {
-        alert('먼저 로그인을 해주셔야 AI 트레이너 기능이 작동합니다!');
-        return;
+    // ── 회원가입 ──
+    signupBtn.addEventListener('click', async () => {
+      const cred = getCredentials();
+      if (!cred) return;
+      try {
+        await auth.createUserWithEmailAndPassword(cred.email, cred.password);
+        alert('회원가입이 완료되었습니다.');
+      } catch (err) {
+        alert(getKoreanError(err.code));
       }
+    });
 
-      const goal = goalSelect.value;
-      const part = partSelect.value;
+    // ── 로그아웃 ──
+    logoutBtn.addEventListener('click', async () => {
+      try { await auth.signOut(); }
+      catch (err) { alert('로그아웃에 실패했습니다.'); }
+    });
+
+    // ── Enter 키 지원 ──
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      const id = document.activeElement.id;
+      if (id === 'emailInput' || id === 'passwordInput') loginBtn.click();
+      if (id === 'questionInput') askBtn.click();
+    });
+
+    // ── AI 루틴 생성 ──
+    askBtn.addEventListener('click', async () => {
+      if (!currentUser) { alert('먼저 로그인을 해주세요!'); return; }
+
+      const goal  = goalSelect.value;
+      const part  = partSelect.value;
       const extra = questionInput.value.trim();
 
-      let fullQuestion = `나는 현재 ${goal}가 목표이고 오늘 ${part}을 하려고 해. `;
-      if (extra) fullQuestion += `추가 요청사항: ${extra}. `;
-      fullQuestion += `이에 맞는 구체적인 운동 종류 루틴 3개와 부상방지 주의사항을 3줄 이내로 명확하게 짜줘.`;
+      let q = `나는 현재 ${goal}가 목표이고 오늘 ${part}을 하려고 해. `;
+      if (extra) q += `추가 요청사항: ${extra}. `;
+      q += `이에 맞는 구체적인 운동 종류 루틴 3개와 부상방지 주의사항을 3줄 이내로 명확하게 짜줘.`;
+
+      setLoading(true);
+      resultBox.classList.add('hidden');
+      statusBox.textContent = 'Apps Script 서버에 요청을 전송했습니다.';
 
       try {
-        setLoading(true);
-        resultBox.classList.add('hidden');
-        answerBox.textContent = 'AI 트레이너가 루틴을 분석하는 중입니다...';
-        statusBox.textContent = 'Apps Script 서버에 요청을 전송했습니다.';
-
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({ question: fullQuestion })
-        });
-
-        const data = await response.json();
+        const res  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ question: q }) });
+        const data = await res.json();
         if (data.error) throw new Error(data.error);
 
-        currentAnswerText = data.answer || '답변을 생성하지 못했습니다.';
+        currentAnswerText   = data.answer || '답변을 생성하지 못했습니다.';
         answerBox.textContent = currentAnswerText;
         resultBox.classList.remove('hidden');
         statusBox.textContent = '답변 및 루틴 생성 완료!';
-      } catch (error) {
-        console.error(error);
-        answerBox.textContent = '오류 발생: ' + error.message;
+      } catch (err) {
+        console.error(err);
+        answerBox.textContent = '오류 발생: ' + err.message;
+        resultBox.classList.remove('hidden');
         statusBox.textContent = '요청 실패';
       } finally {
         setLoading(false);
       }
-    }
+    });
 
-    askBtn.addEventListener('click', askChatGPT);
-
+    // ── TTS ──
     ttsBtn.addEventListener('click', () => {
       if (!currentAnswerText) return;
-      window.speechSynthesis.cancel(); 
-
-      const cleanText = currentAnswerText.replace(/[^가-힣a-zA-Z0-9\s]/g, "").substring(0, 350);
-      const utterance = new SpeechSynthesisUtterance(cleanText);
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(
+        currentAnswerText.replace(/[^가-힣a-zA-Z0-9\s]/g, '').substring(0, 350)
+      );
       utterance.lang = 'ko-KR';
-      utterance.rate = 1.0; 
-
+      utterance.rate = 1.0;
       window.speechSynthesis.speak(utterance);
       statusBox.textContent = '🔊 AI 가이드 음성 출력 중...';
     });
 
+    // ── Firebase 저장 ──
     saveDbBtn.addEventListener('click', () => {
       if (!currentUser || !currentAnswerText) return;
-
-      const userId = currentUser.uid;
-      database.ref('workout_logs/' + userId).push({
-        date: new Date().toLocaleString(),
+      database.ref('workout_logs/' + currentUser.uid).push({
+        date:    new Date().toLocaleString('ko-KR'),
+        goal:    goalSelect.value,
+        part:    partSelect.value,
         routine: currentAnswerText
-      }).then(() => {
-        alert('🎯 오늘 날짜의 AI 운동 루틴이 파이어베이스 DB에 저장되었습니다!');
-      }).catch(err => alert('저장 실패: ' + err.message));
+      }).then(() => alert('🎯 오늘 날짜의 AI 운동 루틴이 파이어베이스 DB에 저장되었습니다!'))
+        .catch(err => alert('저장 실패: ' + err.message));
     });
 
-    function setLoading(isLoading) {
-      askBtn.disabled = isLoading;
-      askBtn.textContent = isLoading ? '생성 중...' : 'AI 트레이닝 루틴 생성';
+    // ── 초기화 ──
+    clearBtn.addEventListener('click', () => {
+      questionInput.value   = '';
+      answerBox.textContent = '';
+      statusBox.textContent = '';
+      currentAnswerText     = '';
+      resultBox.classList.add('hidden');
+      window.speechSynthesis.cancel();
+    });
+
+    function setLoading(on) {
+      askBtn.disabled    = on;
+      askBtn.textContent = on ? '생성 중...' : 'AI 트레이닝 루틴 생성';
     }
 
-    function clearPage() {
-      questionInput.value = ''; answerBox.textContent = ''; statusBox.textContent = '';
-      resultBox.classList.add('hidden'); window.speechSynthesis.cancel();
+    function getKoreanError(code) {
+      const map = {
+        'auth/email-already-in-use':  '이미 가입된 이메일입니다.',
+        'auth/invalid-email':         '이메일 형식이 올바르지 않습니다.',
+        'auth/weak-password':         '비밀번호가 너무 약합니다. 6자리 이상으로 입력해주세요.',
+        'auth/user-not-found':        '가입되지 않은 이메일입니다.',
+        'auth/wrong-password':        '비밀번호가 올바르지 않습니다.',
+        'auth/invalid-credential':          '이메일 또는 비밀번호가 올바르지 않습니다.',
+        'auth/invalid-login-credentials':   '이메일 또는 비밀번호가 올바르지 않습니다.',
+        'auth/network-request-failed':'네트워크 연결을 확인해주세요.'
+      };
+      return map[code] || `오류가 발생했습니다: ${code}`;
     }
   </script>
 </body>
