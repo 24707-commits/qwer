@@ -187,7 +187,7 @@
     const database = firebase.database();
 
     // Apps Script URL (ChatGPT 프록시)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzk-rPd8aNvQShgccCasUYfwJ2mXt7pEZf1ZadgWtetxCpUg7vcuG86Cy_ebC97zBEO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxR_VFZ8TEOaLH9vW7DvqOBkmAc9FCxPMh6vLAiBIwFxCzMevwYLjOT4YL7TAQLnhs/exec';
 
     // ── DOM ──
     const authSection   = document.getElementById('authSection');
@@ -293,7 +293,11 @@
       statusBox.textContent = 'Apps Script 서버에 요청을 전송했습니다.';
 
       try {
-        const res  = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ question: q }) });
+        const res  = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ question: q })
+        });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
 
